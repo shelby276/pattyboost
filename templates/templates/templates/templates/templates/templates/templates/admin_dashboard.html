@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Tableau de bord — Commandes</h1>
+<p><a href="{{ url_for('admin_logout') }}">Déconnexion</a></p>
+
+<table class="table">
+    <tr>
+        <th>#</th><th>Client</th><th>Service</th><th>Qté</th>
+        <th>Montant</th><th>Statut</th><th>Actions</th>
+    </tr>
+    {% for c in commandes %}
+    <tr>
+        <td>{{ c.id }}</td>
+        <td>{{ c.client_nom }}<br><small>{{ c.client_whatsapp }}</small></td>
+        <td>{{ c.service_nom }}</td>
+        <td>{{ c.quantite }}</td>
+        <td>{{ c.prix_vente_cdf }} CDF</td>
+        <td>{{ c.statut }}</td>
+        <td>
+            {% if c.statut == "en_attente_paiement" %}
+            <form method="POST" action="{{ url_for('admin_valider', order_id=c.id) }}">
+                <button type="submit" class="btn small">Paiement reçu → Lancer</button>
+            </form>
+            {% elif c.order_id_provider %}
+            <form method="POST" action="{{ url_for('admin_verifier_statut', order_id=c.id) }}">
+                <button type="submit" class="btn small">Vérifier statut</button>
+            </form>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
