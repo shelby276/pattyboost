@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Suivi de commande</h1>
+
+<form method="GET" class="form inline">
+    <input type="text" name="ref" placeholder="Numéro de commande" value="{{ order.id if order else '' }}">
+    <button type="submit" class="btn">Vérifier</button>
+</form>
+
+{% if order %}
+<div class="card recap">
+    <p><strong>Commande #{{ order.id }}</strong></p>
+    <p>{{ order.service_nom }} x{{ order.quantite }}</p>
+    <p><strong>Statut :</strong> {{ order.statut }}</p>
+</div>
+{% elif request.args.get('ref') %}
+<p class="sub">Commande introuvable.</p>
+{% endif %}
+{% endblock %}
