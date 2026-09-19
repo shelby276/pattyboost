@@ -19,13 +19,17 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-change-en-prod")
 
 # ---------------------------------------------------------------------
 # CATALOGUE DYNAMIQUE : au lieu d'une liste figée, le site récupère TOUS
-# les services Instagram / TikTok / Facebook directement depuis SMMKing
-# à chaque rafraîchissement du cache (voir services_api.obtenir_catalogue).
+# les services autorisés directement depuis SMMKing à chaque
+# rafraîchissement du cache (voir services_api.obtenir_catalogue).
 # ---------------------------------------------------------------------
 
 # Mots-clés utilisés pour ne garder que les catégories de ces réseaux
-# (insensible à la casse). Ajoute des mots si tu veux élargir (ex: "YouTube").
-PLATEFORMES_AUTORISEES = ["Instagram", "TikTok", "Facebook"]
+# (insensible à la casse).
+PLATEFORMES_AUTORISEES = [
+    "Instagram", "TikTok", "Facebook", "YouTube", "Twitter", "X (Twitter)",
+    "Telegram", "Spotify", "WhatsApp", "LinkedIn", "Snapchat", "Twitch",
+    "Threads", "Pinterest", "Discord", "SoundCloud",
+]
 
 # Marge appliquée automatiquement : prix de vente = prix d'achat x MARKUP
 # 3.0 = tu factures 3 fois le prix que te facture SMMKing.
