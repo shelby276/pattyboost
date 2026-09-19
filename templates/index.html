@@ -1,20 +1,21 @@
-{% extends "base.html" %}
-{% block content %}
-<h1>Nos services de boostage</h1>
-<p class="sub">Instagram · TikTok · Facebook — paiement Mobile Money, livraison rapide.</p>
+{% extends "base.html" %} {% block content %}
+Nos services de boostage
+Instagram · TikTok · Facebook — paiement Mobile Money, livraison rapide.
 
-<div class="grid">
-    {% for s in services %}
-    <div class="card">
-        <h3>{{ s.nom }}</h3>
-        <p class="plateforme">{{ s.plateforme }}</p>
-        <p class="prix">
-            {{ (s.prix_vente_usd1000 * usd_to_cdf) | round | int }} CDF
-            <span class="unit">/ 1000</span>
-        </p>
-        <p class="minmax">Min {{ s.min }} — Max {{ s.max }}</p>
-        <a href="{{ url_for('commander', service=s.nom) }}" class="btn">Commander</a>
-    </div>
-    {% endfor %}
-</div>
+{{ q }}
+ Chercher
+{% if not services %}
+Aucun service trouvé. Essaie un autre mot-clé, ou reviens dans quelques minutes (catalogue en cours de chargement).
+
+{% endif %}
+{% for s in services %}
+{{ s.nom }}
+{{ s.categorie }}
+
+{{ (s.prix_vente_usd1000 * usd_to_cdf) | round | int }} CDF / 1000
+
+Min {{ s.min }} — Max {{ s.max }}
+
+Commander
+{% endfor %}
 {% endblock %}
