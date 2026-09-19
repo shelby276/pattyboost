@@ -30,3 +30,27 @@ def passer_commande(service_id_provider: int, lien: str, quantite: int):
     }
     r = requests.post(SMM_API_URL, data=payload, timeout=15)
     r.raise_for_status()
+    data = r.json()
+    if "order" in data:
+        return str(data["order"])
+    raise RuntimeError(f"Réponse inattendue du fournisseur : {data}")
+
+
+def statut_commande(order_id_provider: str):
+    """Vérifie le statut d'une commande chez le fournisseur."""
+    payload = {
+        "key": SMM_API_KEY,
+        "action": "status",
+        "order": order_id_provider,
+    }
+    r = requests.post(SMM_API_URL, data=payload, timeout=15)
+    r.raise_for_status()
+    return r.json()
+
+
+def solde_compte():
+    """Vérifie ton solde disponible chez le fournisseur."""
+    payload = {"key": SMM_API_KEY, "action": "balance"}
+    r = requests.post(SMM_API_URL, data=payload, timeout=15)
+    r.raise_for_status()
+    return r.json()
