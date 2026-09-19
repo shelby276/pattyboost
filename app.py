@@ -3,8 +3,7 @@ from functools import wraps
 import urllib.parse
 
 from config import (
-    SECRET_KEY, SERVICES, USD_TO_CDF,
-    WHATSAPP_NUMBER, ADMIN_PASSWORD,
+    SECRET_KEY, USD_TO_CDF, WHATSAPP_NUMBER, ADMIN_PASSWORD,
 )
 from models import init_db, Order
 import services_api
@@ -20,41 +19,34 @@ def prix_vente_cdf(service, quantite):
     return round(prix_usd * USD_TO_CDF)
 
 
-def trouver_service(nom):
-    return next((s for s in SERVICES if s["nom"] == nom), None)
-
-
-@app.route("/test-api")
-def test_api():
-    try:
-        solde = services_api.solde_compte()
-        return f"Connexion réussie ! Résultat : {solde}"
-    except Exception as e:
-        return f"Erreur : {e}"
-
-
-@app.route("/liste-services")
-def liste_services():
-    try:
-        services = services_api.lister_services_fournisseur()
-        return {"services": services}
-    except Exception as e:
-        return f"Erreur : {e}"
-
-
 # ---------------------------------------------------------------- PUBLIC ----
 
 @app.route("/")
 def index():
-    return render_template("index.html", services=SERVICES, usd_to_cdf=USD_TO_CDF)
+    q = request.args.get("q", "").strip().lower()
+    try:
+        catalogue = services_api.obtenir_catalogue()
+    except Exception as e:
+        flash(f"Impossible de charger le catalogue SMM : {e}")
+        catalogue = []
+
+    if q:
+        catalogue = [
+            s for s in catalogue
+            if q in s["nom"].lower() or q in s["categorie"].lower()
+        ]
+
+    return render_template(
+        "index.html", services=catalogue, usd_to_cdf=USD_TO_CDF, q=q
+    )
 
 
 @app.route("/commander", methods=["GET", "POST"])
 def commander():
-    service_nom = request.args.get("service") or request.form.get("service")
-    service = trouver_service(service_nom)
+    service_id = request.args.get("service") or request.form.get("service")
+    service = services_api.trouver_service_par_id(service_id) if service_id else None
     if not service:
-        flash("Service introuvable.")
+        flash("Service introuvable ou catalogue expiré, réessaie depuis l'accueil.")
         return redirect(url_for("index"))
 
     if request.method == "POST":
@@ -69,7 +61,7 @@ def commander():
             client_nom=request.form.get("nom", ""),
             client_whatsapp=request.form.get("whatsapp", ""),
             service_nom=service["nom"],
-            service_id_provider=service["service_id_provider"],
+            service_id_provider=service["id"],
             lien_cible=request.form["lien"],
             quantite=quantite,
             prix_vente_cdf=prix_cdf,
@@ -137,7 +129,6 @@ def admin_dashboard():
 @app.route("/admin/valider/<int:order_id>", methods=["POST"])
 @admin_requis
 def admin_valider(order_id):
-    """Marque le paiement reçu, puis envoie la commande au fournisseur SMM."""
     order = Order.get(order_id)
     if not order:
         return redirect(url_for("admin_dashboard"))
