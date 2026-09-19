@@ -1,23 +1,14 @@
-{% extends "base.html" %}
-{% block content %}
-<h1>Commander : {{ service.nom }}</h1>
-<p class="sub">Prix : {{ (service.prix_vente_usd1000 * usd_to_cdf) | round | int }} CDF / 1000 — Min {{ service.min }}, Max {{ service.max }}</p>
+{% extends "base.html" %} {% block content %}
+Commander : {{ service.nom }}
+{{ service.categorie }}
 
-<form method="POST" class="form">
-    <input type="hidden" name="service" value="{{ service.nom }}">
+Prix : {{ (service.prix_vente_usd1000 * usd_to_cdf) | round | int }} CDF / 1000 — Min {{ service.min }}, Max {{ service.max }}
 
-    <label>Votre nom</label>
-    <input type="text" name="nom" required>
-
-    <label>Votre numéro WhatsApp</label>
-    <input type="text" name="whatsapp" placeholder="ex: 0987167271" required>
-
-    <label>Lien du profil / de la publication à booster</label>
-    <input type="url" name="lien" placeholder="https://instagram.com/..." required>
-
-    <label>Quantité (entre {{ service.min }} et {{ service.max }})</label>
-    <input type="number" name="quantite" min="{{ service.min }}" max="{{ service.max }}" required>
-
-    <button type="submit" class="btn">Valider la commande</button>
-</form>
+Votre nom 
+ Votre numéro WhatsApp 
+ex: 0987167271
+ Lien du profil / de la publication à booster 
+https://instagram.com/...
+ Quantité (entre {{ service.min }} et {{ service.max }}) 
+ Valider la commande
 {% endblock %}
